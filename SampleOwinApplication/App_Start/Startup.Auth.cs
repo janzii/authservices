@@ -57,17 +57,19 @@ namespace SampleOwinApplication
                 SPOptions = spOptions
             };
 
-            authServicesOptions.IdentityProviders.Add(
-                new IdentityProvider(
+			var provider = new IdentityProvider(
                     new EntityId("http://stubidp.kentor.se/Metadata"), spOptions)
                 {
                     AllowUnsolicitedAuthnResponse = true,
                     Binding = Saml2BindingType.HttpRedirect,
                     SingleSignOnServiceUrl = new Uri("http://stubidp.kentor.se"),
-                    SigningKey = new X509Certificate2(
+                };
+			provider.SigningKeys.Add(new X509Certificate2(
                         HostingEnvironment.MapPath("~/App_Data/Kentor.AuthServices.StubIdp.pfx"))
-                        .PublicKey.Key
-                });
+                        .PublicKey.Key);
+
+            authServicesOptions.IdentityProviders.Add(provider);
+                
 
             // It's enough to just create the federation and associate it
             // with the options. The federation will load the metadata and

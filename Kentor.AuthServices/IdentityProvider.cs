@@ -13,6 +13,7 @@ using Kentor.AuthServices.Saml2P;
 using Kentor.AuthServices.WebSso;
 using System.Threading.Tasks;
 using System.Net;
+using System.Collections.Generic;
 
 namespace Kentor.AuthServices
 {
@@ -50,7 +51,7 @@ namespace Kentor.AuthServices
 
             if (certificate != null)
             {
-                signingKey = certificate.PublicKey.Key;
+				signingKeys.Add(certificate.PublicKey.Key);
             }
 
             try
@@ -76,7 +77,7 @@ namespace Kentor.AuthServices
                 throw new ConfigurationErrorsException("Missing binding configuration on Idp " + EntityId.Id + ".");
             }
 
-            if (SigningKey == null)
+            if (SigningKeys == null)
             {
                 throw new ConfigurationErrorsException("Missing signing certificate configuration on Idp " + EntityId.Id + ".");
             }
@@ -243,21 +244,17 @@ namespace Kentor.AuthServices
             return Saml2Binding.Get(Binding).Bind(request);
         }
 
-        private AsymmetricAlgorithm signingKey;
+        private List<AsymmetricAlgorithm> signingKeys = new List<AsymmetricAlgorithm>();
 
         /// <summary>
         /// The public key of the idp that is used to verify signatures of responses/assertions.
         /// </summary>
-        public AsymmetricAlgorithm SigningKey
+        public IList<AsymmetricAlgorithm> SigningKeys
         {
             get
             {
                 ReloadMetadataIfRequired();
-                return signingKey;
-            }
-            set
-            {
-                signingKey = value;
+                return signingKeys;
             }
 
         }
@@ -325,14 +322,14 @@ namespace Kentor.AuthServices
             binding = Saml2Binding.UriToSaml2BindingType(ssoService.Binding);
             singleSignOnServiceUrl = ssoService.Location;
 
-            var key = idpDescriptor.Keys
-                .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing)
-                .SingleOrDefault();
+			signingKeys.Clear();
 
-            if (key != null)
+            var keys = idpDescriptor.Keys
+                .Where(k => k.Use == KeyType.Unspecified || k.Use == KeyType.Signing);
+
+			foreach (var key in keys)
             {
-                signingKey = ((AsymmetricSecurityKey)key.KeyInfo.CreateKey())
-                    .GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false);
+				signingKeys.Add(((AsymmetricSecurityKey)key.KeyInfo.CreateKey()).GetAsymmetricAlgorithm(SignedXml.XmlDsigRSASHA1Url, false));
             }
         }
 
