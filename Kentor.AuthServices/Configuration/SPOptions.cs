@@ -146,6 +146,19 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+		/// <summary>
+		/// Certificate location for the certificate the SP should use to sign its messages.
+		/// </summary>
+		public CertificateElement Certificate
+		{
+			get
+			{
+				return certificate;
+			}
+		}
+
+		private CertificateElement certificate;
+
         /// <summary>
         /// Collection of attribute consuming services for the service provider.
         /// </summary>

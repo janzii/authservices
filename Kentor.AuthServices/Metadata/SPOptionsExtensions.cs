@@ -30,6 +30,17 @@ namespace Kentor.AuthServices.Metadata
 
             spsso.ProtocolsSupported.Add(new Uri("urn:oasis:names:tc:SAML:2.0:protocol"));
 
+			var cert = spOptions.Certificate.LoadCertificate();
+			if (cert != null) {
+
+				var clause = new System.IdentityModel.Tokens.X509RawDataKeyIdentifierClause(cert);
+
+				var key = new KeyDescriptor(new System.IdentityModel.Tokens.SecurityKeyIdentifier());
+				key.KeyInfo.Add(clause);
+
+				spsso.Keys.Add(key);
+			}
+
             spsso.AssertionConsumerServices.Add(0, new IndexedProtocolEndpoint()
             {
                 Index = 0,

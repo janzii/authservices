@@ -287,6 +287,19 @@ namespace Kentor.AuthServices.Configuration
             }
         }
 
+		/// <summary>
+		/// Certificate location for the certificate the SP uses to sign its messages.
+		/// </summary>
+		[ConfigurationProperty("certificate")]
+		public CertificateElement Certificate {
+			get {
+				return (CertificateElement)base["certificate"];
+			}
+			internal set {
+				base["certificate"] = value;
+			}
+		}
+
         private IdentityConfiguration systemIdentityModelIdentityConfiguration
             = new IdentityConfiguration(true);
 

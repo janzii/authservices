@@ -87,6 +87,7 @@ namespace Kentor.AuthServices.Mvc
             var result = CommandFactory.GetCommand(CommandFactory.MetadataCommand).Run(
                 Request.ToHttpRequestData(),
                 Options);
+			result.ContentType = "text/xml";
             return result.ToActionResult();
         }
     }

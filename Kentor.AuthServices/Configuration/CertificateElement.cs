@@ -110,7 +110,7 @@ namespace Kentor.AuthServices.Configuration
                 string fileName = FileName;
                 fileName = PathHelper.MapPath(fileName);
                 
-                return new X509Certificate2(fileName);
+                return new X509Certificate2(fileName, "", X509KeyStorageFlags.MachineKeySet);
             }
             else
             {
@@ -118,26 +118,7 @@ namespace Kentor.AuthServices.Configuration
                 // in the config.
                 if (StoreLocation != 0)
                 {
-                    var store = new X509Store(StoreName, StoreLocation);
-                    store.Open(OpenFlags.ReadOnly);
-                    try
-                    {
-                        var certs = store.Certificates.Find(X509FindType, FindValue, false);
-
-                        if (certs.Count != 1)
-                        {
-                            throw new InvalidOperationException(
-                                string.Format(CultureInfo.InvariantCulture,
-                                "Finding cert through {0} in {1}:{2} with value {3} matched {4} certificates. A unique match is required.",
-                                X509FindType, StoreLocation, StoreName, FindValue, certs.Count));
-                        }
-
-                        return certs[0];
-                    }
-                    finally
-                    {
-                        store.Close();
-                    }
+					return CertificateUtilities.GetCertificate(StoreName, StoreLocation, X509FindType, FindValue);
                 }
                 else
                 {

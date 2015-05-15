@@ -69,5 +69,10 @@ namespace Kentor.AuthServices.Configuration
         /// The System.IdentityModel configuration to use.
         /// </summary>
         IdentityConfiguration SystemIdentityModelIdentityConfiguration { get; }
+
+		/// <summary>
+		/// Certificate for the service provider.
+		/// </summary>
+		CertificateElement Certificate { get; }
     }
 }
